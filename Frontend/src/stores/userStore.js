@@ -6,7 +6,8 @@ const userStore = defineStore('user', {
     return {
       username: null,
       email: null,
-      isLogged: null
+      id: null,
+      isLogged: false,
     }
   },
   actions: {
