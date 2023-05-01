@@ -20,10 +20,14 @@ function checkToken() {
   }
 }
 
-function routerMiddleware(to, from){
+function routerMiddleware(to, from, next){
   const token = localStorage.getItem('token')
-  if(token){
-    to.meta.config = {}
+  if(to.meta.requiresAuth){
+    if(token){
+      next()
+    } else {
+      next('login')
+    }
   }
 }
 export default { checkToken, verifyAuthToken, routerMiddleware }

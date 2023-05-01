@@ -5,7 +5,7 @@ const tryCatch = require('../utils/tryCatch');
 
 
 function generateToken(data) {
-  return jwt.sign({ data }, process.env.TOKEN_SECRET, { expiresIn: 60 * 100 });
+  return jwt.sign({ data }, process.env.TOKEN_SECRET, { expiresIn: "1h" });
 }
 
 function verifyToken(token) {

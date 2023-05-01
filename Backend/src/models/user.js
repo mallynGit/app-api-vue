@@ -22,7 +22,7 @@ const User = sequelize.define(
       validate: { isEmail: true },
     },
   },
-  { freezeTableName: true }
+  { freezeTableName: true, timestamps: false }
 );
 
 module.exports = User

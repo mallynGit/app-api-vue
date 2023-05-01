@@ -48,9 +48,9 @@ const update = async(req,res) => {
 
 const create = async(req,res) => {
 
-    if(!req.cookies.token || !auth.verifyToken(req.cookies.token)){
-        throw new AppError(NOT_LOGGED, 401, 'not logged in')
-    }
+    // if(!req.cookies.token || !auth.verifyToken(req.cookies.token)){
+    //     throw new AppError(NOT_LOGGED, 401, 'not logged in')
+    // }
     if(!req.body) throw new AppError(BAD_REQUEST, 400)
     if((await User.findOne({where:{username: req.body.username}}))!==null) throw new AppError(107, 200, 'User already exists.')
     console.log('unencrypted: '+req.body.password)
@@ -81,13 +81,15 @@ const login = async (req,res)=>{
 
     if(!req.body || (!req.body.username || !req.body.password)) throw new AppError(BAD_REQUEST, 400, 'peticion malformada')
     if(await bcrypt.compare(req.body.password, encPass)===false) throw new AppError(BAD_LOGIN, 401, 'login incorrecto')
-    if(req.cookies.token && auth.verifyToken(req.cookies.token)) throw new AppError(ALREADY_LOGGED, 301, 'sesion ya iniciada')
+    if(cookie && auth.verifyToken(cookie)) throw new AppError(ALREADY_LOGGED, 301, 'sesion ya iniciada')
 
 
     const token = auth.generateToken({username: req.body.username, password: req.body.password})
     res.header("Access-Control-Allow-Origin", "https://localhost:5173")
-    
+
     res.status(200).json({"token": token, "username": user.username, "email": user.email})
+
+    
 
 }
 

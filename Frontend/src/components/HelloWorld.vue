@@ -18,8 +18,7 @@ const data = ref({
 
 function login() {
 if(!data.value.usuario||!data.value.password){
-  data.value.showAlert=true
-  data.value.errorText='Se requiere usuario y contrasenya'
+  toast('Se requiere usuario y contrasenya',{type: 'success', pauseOnHover: false, pauseOnFocusLoss: false})
   return
 }
 
@@ -28,8 +27,8 @@ if(!data.value.usuario||!data.value.password){
       username: data.value.usuario,
       password: data.value.password
     })
-    .then((res, req) => {
-      console.log(req)
+    .then((res) => {
+      console.log("res",res)
       if(auth.checkToken()===true){
         toast('Ya estas logueado.', {type: 'error', pauseOnHover: false})
         return
@@ -54,7 +53,7 @@ if(!data.value.usuario||!data.value.password){
         store.setEmail(res.data.email)
         store.setUsername(res.data.username)
         store.login()
-        console.log(store)
+        router.push('loggedin')
       }
     })
     .catch((err) => {
@@ -74,19 +73,19 @@ if(!data.value.usuario||!data.value.password){
     })
 }
 
-function get() {
-  if(document.cookie)
-  api
-    .get('getAllUsers', {
-      withCredentials: true,
-    })
-    .then((res) => {
-      console.log(res.data)
-    })
-    .catch((err) => {
-      console.log(err)
-    })
-}
+// function get() {
+//   if(document.cookie)
+//   api
+//     .get('getAllUsers', {
+//       withCredentials: true,
+//     })
+//     .then((res) => {
+//       console.log(res.data)
+//     })
+//     .catch((err) => {
+//       console.log(err)
+//     })
+// }
 
 const rules = [(v) => !!v || 'Rellena este campo.']
 function validate() {
@@ -99,11 +98,10 @@ function validate() {
     <v-alert v-model="data.showAlert" type="error" class="mb-3" closable>{{data.errorText}}</v-alert>
     <v-form @submit.prevent="login">
       <v-text-field v-model="data.usuario" label="user" required :rules="rules" id="user" class="mb-2"></v-text-field>
-      <v-text-field v-model="data.password" label="pass" required :rules="rules" id="password" class="mb-2"></v-text-field>
+      <v-text-field v-model="data.password" label="pass" required :rules="rules" id="password" class="mb-2" type="password"></v-text-field>
       <v-row class="my-3">
-      <v-btn @click="data.showAlert=true" class="mx-auto">GET</v-btn>
       <!--:disabled="!data.usuario||!data.password"-->
-      <v-btn type="submit" class="mx-auto" @click="validate">Login</v-btn>
+      <v-btn type="submit" class="mx-auto" @click="validate" :disabled="!data.usuario||!data.password">Login</v-btn>
       </v-row>
     </v-form>
     

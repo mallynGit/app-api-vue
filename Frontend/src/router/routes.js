@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { HomeView, LoginView, LoggedinView } from '@/views'
 import LoginComp from '../components/LoginComp.vue'
-import axios from 'axios'
-import {toast} from 'vue3-toastify'
+
+import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
 
 const routes = [
@@ -32,19 +32,17 @@ const router = createRouter({
 })
 
 // eslint-disable-next-line no-unused-vars
-router.beforeEach((to, from) => {
+router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('token')
-  console.log('comprobando')
-  if (token && to.matched.some((record) => record.meta.requiresAuth)) {
-    console.log('comprobado auth')
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-    return true
-  } else if (to.matched.some((record) => !record.meta.requiresAuth)){
-    delete axios.defaults.headers.common['Authorization']
-    return true
+  if (to.meta.requiresAuth) {
+    if (token) {
+      next()
+    } else {
+      toast('No tienes acceso a esa ruta.', { pauseOnHover: false, hideProgressBar: true })
+      next('login')
+    }
   } else {
-    toast('No tienes acceso a esa ruta.', {pauseOnHover: false, hideProgressBar: true})
-    return false
+    next()
   }
 })
 

@@ -1,27 +1,31 @@
 <script setup>
-import {router} from '@/router'
-import {toast} from 'vue3-toastify'
+
 import 'vue3-toastify/dist/index.css'
-import {default as verifyToken} from '../middleware/auth'
+import {userStore} from '@/stores'
+const store = userStore()
+console.log(store.username)
 
-const token = localStorage.getItem('token')
 
-if(!token){
-    notify('No estas logueado')
-    router.push('/login') 
-}
 
-function notify(msg){
-toast(msg, {pauseOnHover: false, autoClose: 10500, theme: 'colored'})
-}
+
 
 </script>
 
 <template>
 
-<div class="text-center">
-<v-btn @click="notify('todo va bien')">holi</v-btn>
-</div>
+<v-sheet>
+    Email: {{ store.getEmail }}<br/>
+    Username: {{ store.getUsername }}
+
+</v-sheet>
+
+<v-form>
+    <v-text-field v-model="store.username" label="user" required id="user" class="mb-2" :value="store.getUsername" lazy></v-text-field>
+
+    <v-row>
+        <v-btn type="submit" class="mx-auto">Update</v-btn>
+    </v-row>
+</v-form>
 </template>
 
 <style>

@@ -1,11 +1,16 @@
 <script setup>
-import {router} from '@/router'
+// import {router} from '@/router'
+import {toast} from 'vue3-toastify'
 import {userStore} from '@/stores'
 const store = userStore()
 
-function log(){
-  console.log(store.getUsername)
+function desloguear(){
+  store.logout()
+  toast('Sesion cerrada correctamente.', {type: 'success', pauseOnHover: false, pauseOnFocusLoss: false})
 }
+
+
+
 
 </script>
 
@@ -15,8 +20,8 @@ function log(){
       <v-app-bar-title><v-btn to="/">Menu</v-btn></v-app-bar-title>
 
       <v-btn to="/login">Login</v-btn>
-      <v-btn to="/loggedin">Logged in</v-btn>
-      <v-btn @click="log">Logout</v-btn>
+      <v-btn to="/loggedin">Account</v-btn>
+      <v-btn @click="desloguear">Logout</v-btn>
       <v-btn to="/test">Test</v-btn>
     </v-app-bar>
 
