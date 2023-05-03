@@ -1,9 +1,19 @@
 <script setup>
-
+import {api} from '@/middleware'
 import 'vue3-toastify/dist/index.css'
 import {userStore} from '@/stores'
+import { onMounted, reactive } from 'vue';
 const store = userStore()
 console.log(store.username)
+
+
+reactive({
+msg: '',
+})
+
+async function get() {
+api.get(`getUser/${store.id}`)
+}
 
 
 
@@ -15,17 +25,18 @@ console.log(store.username)
 
 <v-sheet>
     Email: {{ store.getEmail }}<br/>
-    Username: {{ store.getUsername }}
+    Username: {{ store.getUsername }}<br/>
+    ID: {{ store.id }}
 
 </v-sheet>
-
-<v-form>
-    <v-text-field v-model="store.username" label="user" required id="user" class="mb-2" :value="store.getUsername" lazy></v-text-field>
+<br/>
+<v-sheet>Get: {{ get() }}</v-sheet>
+<br/>
 
     <v-row>
-        <v-btn type="submit" class="mx-auto">Update</v-btn>
+        <v-btn class="mx-auto" @click="get">Get</v-btn>
     </v-row>
-</v-form>
+
 </template>
 
 <style>
