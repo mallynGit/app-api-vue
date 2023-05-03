@@ -9,7 +9,7 @@ const User = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
-      validate: { notEmpty: true },
+      validate: { notEmpty: true, len: [4,10] },
     },
     password: {
       type: DataTypes.STRING,

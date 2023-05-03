@@ -20,14 +20,15 @@ const getAll = async(req,res) => {
 }
 
 const get = async(req,res) => {
-    
-    if(!req.cookies.token || !auth.verifyToken(req.cookies.token)){
+    console.log(req.headers.authorization)
+    if(!req.headers.authorization || !auth.verifyToken(req.headers.authorization)){
         throw new AppError(NOT_LOGGED, 401, 'not logged in')
     }
+    console.log('headers',req.headers)
     if(req.params.id===undefined) throw new AppError(NO_ID, 400)
     
     //console.log((await User.findOne({attributes: ['password'], where: {id: req.params.id}})).dataValues.password);
-    res.json(await User.findAll({where: {id: req.params.id}}))
+    res.send(await User.findAll({where: {id: req.params.id}}))
 
 }
 
@@ -84,10 +85,13 @@ const login = async (req,res)=>{
     if(cookie && auth.verifyToken(cookie)) throw new AppError(ALREADY_LOGGED, 301, 'sesion ya iniciada')
 
 
-    const token = auth.generateToken({username: req.body.username, password: req.body.password})
+    console.log(req.body);
+    delete user.dataValues.password
+    const token = auth.generateToken(user.dataValues)
     res.header("Access-Control-Allow-Origin", "https://localhost:5173")
 
-    res.status(200).json({"token": token, "username": user.username, "email": user.email})
+    console.log(token)
+    res.status(200).json({"token": token})
 
     
 

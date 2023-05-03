@@ -24,7 +24,7 @@ const userStore = defineStore('user', {
       this.isLogged = true
     },
     logout() {
-      this.isLogged = false
+      console.log(this.isLogged = false)
       localStorage.removeItem('token')
       router.push('login')
     }

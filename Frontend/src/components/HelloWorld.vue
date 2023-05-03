@@ -5,9 +5,10 @@ import {router} from '@/router'
 import {toast} from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
 import {auth} from '@/middleware'
+import { evaluate } from '@/middleware'
 import {userStore} from '@/stores'
 
-const store = userStore()
+const user = userStore()
 
 const data = ref({
   usuario: '',
@@ -17,6 +18,8 @@ const data = ref({
 })
 
 function login() {
+  localStorage.removeItem('token')
+  user.isLogged = false
 if(!data.value.usuario||!data.value.password){
   toast('Se requiere usuario y contrasenya',{type: 'success', pauseOnHover: false, pauseOnFocusLoss: false})
   return
@@ -49,10 +52,8 @@ if(!data.value.usuario||!data.value.password){
         localStorage.setItem('token', res.data.token)
         console.log(res.data.token)
         toast('Login correcto!', {type: 'success', pauseOnHover: false, pauseOnFocusLoss: false})
-        console.log(res.data.email, res.data.username)
-        store.setEmail(res.data.email)
-        store.setUsername(res.data.username)
-        store.login()
+        user.isLogged = false
+        evaluate()
         router.push('loggedin')
       }
     })

@@ -19,9 +19,9 @@ function desloguear(){
     <v-app-bar>
       <v-app-bar-title><v-btn to="/">Menu</v-btn></v-app-bar-title>
 
-      <v-btn to="/login">Login</v-btn>
-      <v-btn to="/loggedin">Account</v-btn>
-      <v-btn @click="desloguear">Logout</v-btn>
+      <v-btn to="/login" v-if="!store.isLogged">Login</v-btn>
+      <v-btn to="/loggedin" v-if="store.isLogged">Account</v-btn>
+      <v-btn @click="desloguear" v-if="store.isLogged">Logout</v-btn>
       <v-btn to="/test">Test</v-btn>
     </v-app-bar>
 

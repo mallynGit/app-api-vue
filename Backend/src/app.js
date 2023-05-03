@@ -5,6 +5,7 @@ const app = express();
 const routes = require("./routes/routes");
 const cors = require("cors");
 
+const auth = require("./controllers/authcontroller")
 const errorHandler = require("./middleware/errorhandler");
 const cookieParser = require("cookie-parser");
 
@@ -13,6 +14,7 @@ async function createServer() {
   https.createServer(config.options, app).listen(port, () => {
     console.log(`Servidor HTTPS creado en el puerto ${port}`);
   });
+  app.use(errorHandler);
   app.use(cors());
   app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "https://localhost:5173");
@@ -20,9 +22,9 @@ async function createServer() {
     next();
   });
   app.use(cookieParser());
-  
+  //app.use(auth);
   app.use(routes);
-  app.use(errorHandler);
+  
   
   // app.use((err, req, res, next) => {
   //     if (! err) {
