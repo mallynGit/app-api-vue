@@ -9,7 +9,7 @@ const bcrypt = require('bcrypt');
 const getAll = async(req,res) => {
     // res.header("Access-Control-Allow-Origin", "https://localhost:5173")
     // res.header("Access-Control-Allow-Credentials", "true")
-    if(!req.cookies.token || !auth.verifyToken(req.cookies.token)){
+    if(!req.headers.authorization || !auth.verifyToken(req.headers.authorization)){
         throw new AppError(NOT_LOGGED, 401, 'not logged in')
     }
     // console.log(req.cookies);
@@ -34,7 +34,7 @@ const get = async(req,res) => {
 
 const update = async(req,res) => {
 
-    if(!req.cookies.token || !auth.verifyToken(req.cookies.token)){
+    if(!req.headers.authorization || !auth.verifyToken(req.headers.authorization)){
         throw new AppError(NOT_LOGGED, 401, 'not logged in')
     }
     if(req.params.id===undefined) throw new AppError(NO_ID, 400)
@@ -49,21 +49,23 @@ const update = async(req,res) => {
 
 const create = async(req,res) => {
 
-    // if(!req.cookies.token || !auth.verifyToken(req.cookies.token)){
-    //     throw new AppError(NOT_LOGGED, 401, 'not logged in')
-    // }
+    if(!req.headers.authorization || !auth.verifyToken(req.headers.authorization)){
+        throw new AppError(NOT_LOGGED, 401, 'not logged in')
+    }
     if(!req.body) throw new AppError(BAD_REQUEST, 400)
     if((await User.findOne({where:{username: req.body.username}}))!==null) throw new AppError(107, 200, 'User already exists.')
     console.log('unencrypted: '+req.body.password)
+    body = req.body
     req.body.password = await bcrypt.hash(req.body.password, 10)
     console.log('encrypted: '+req.body.password);
-    res.json(await User.create(req.body))
+    await User.create(req.body)
+    res.json(body)
 
 }
 
 const remove = async (req,res) => {
 
-    if(!req.cookies.token || !auth.verifyToken(req.cookies.token)){
+    if(!req.headers.authorization || !auth.verifyToken(req.headers.authorization)){
         throw new AppError(NOT_LOGGED, 401, 'not logged in')
     }
     if(!req.params.id) throw new AppError(NO_ID, 404)
@@ -71,29 +73,47 @@ const remove = async (req,res) => {
 
 }
 
-const login = async (req,res)=>{
+const login = async (request,response)=>{
 
-    const user = (await User.findOne({where: {username: req.body.username}}))
+    const user = (await User.findOne({where: {username: request.body.username}}))
     
     if(user===null){throw new AppError(USER_NOT_EXIST, 404, 'usuario no existe')}
 
-    const encPass = user.password
-    const cookie = req.cookies.token
+    const encPass = user.dataValues.password
+    console.log(encPass);
+    console.log('passsssss',request.body.password);
 
-    if(!req.body || (!req.body.username || !req.body.password)) throw new AppError(BAD_REQUEST, 400, 'peticion malformada')
-    if(await bcrypt.compare(req.body.password, encPass)===false) throw new AppError(BAD_LOGIN, 401, 'login incorrecto')
-    if(cookie && auth.verifyToken(cookie)) throw new AppError(ALREADY_LOGGED, 301, 'sesion ya iniciada')
+    if(!request.body || (!request.body.username || !request.body.password)) throw new AppError(BAD_REQUEST, 400, 'peticion malformada')
+    if(await bcrypt.compare(request.body.password, encPass)===false) throw new AppError(BAD_LOGIN, 401, 'login incorrecto')
+    if(request.headers.authorization && auth.verifyToken(request.headers.authorization)) throw new AppError(ALREADY_LOGGED, 301, 'sesion ya iniciada')
 
 
-    console.log(req.body);
+    //console.log(req.body);
     delete user.dataValues.password
     const token = auth.generateToken(user.dataValues)
-    res.header("Access-Control-Allow-Origin", "https://localhost:5173")
+    response.header("Access-Control-Allow-Origin", "https://localhost:5173")
 
-    console.log(token)
-    res.status(200).json({"token": token})
+   // console.log(token)
+   response.status(200).json({"token": token})
 
     
+
+}
+
+const register = async (req,res)=>{
+    console.log(req.body)
+    const unencrypted = req.body.password
+    if(!req.body || (!req.body.username || !req.body.password)) throw new AppError(BAD_REQUEST, 400, 'peticion malformada')
+    if((await User.findOne({where:{username: req.body.username}}))!==null) throw new AppError(107, 200, 'User already exists.')
+    req.body.password = await bcrypt.hash(req.body.password, 10)
+    console.log('UNENCRYPTED',unencrypted);
+    const u =await User.create(req.body)
+    req.body.password=unencrypted
+    
+    console.log('go',u)
+
+    login(req,res)
+
 
 }
 
@@ -104,3 +124,4 @@ module.exports.update = update
 module.exports.insert = create
 module.exports.remove = remove
 module.exports.login = login
+module.exports.register = register

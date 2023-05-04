@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { HomeView, LoginView, LoggedinView } from '@/views'
-import LoginComp from '../components/LoginComp.vue'
+import { HomeView, LoginView, LoggedinView, RegisterView } from '@/views'
 // import { userStore } from '@/stores'
 import {evaluate} from '@/middleware'
 
@@ -17,15 +16,14 @@ const routes = [
     component: LoginView
   },
   {
+    path: '/register',
+    component: RegisterView
+  },
+  {
     path: '/loggedin',
     component: LoggedinView,
     meta: { requiresAuth: true }
   },
-  {
-    path: '/test',
-    component: LoginComp,
-    meta: { requiresAuth: true }
-  }
 ]
 
 const router = createRouter({

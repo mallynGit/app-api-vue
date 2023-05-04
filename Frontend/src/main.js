@@ -22,6 +22,8 @@ const vuetify = createVuetify({
   },
 })
 
+//pasar vuetify a plugins/vuetify, hacer configuracion global de parametros, y fin
+
 import './assets/main.css'
 
 const app = createApp(App)

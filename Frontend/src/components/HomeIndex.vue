@@ -1,9 +1,11 @@
 <script setup>
-
+function ok(){
+    console.log('ok')
+}
 </script>
 
 <template>
 
-<v-btn>hola</v-btn>
+<v-btn @click="ok">hola</v-btn>
     
 </template>

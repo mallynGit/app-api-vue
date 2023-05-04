@@ -1,10 +1,10 @@
 <template>
   <v-container class="bg-blue my-16">
-<HelloWorld />
+<LoginComp />
 </v-container>
 </template>
 
 <script setup>
 
-import HelloWorld from '@/components/HelloWorld.vue'
+import {LoginComp} from '@/components'
 </script>

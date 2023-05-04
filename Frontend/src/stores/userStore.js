@@ -1,5 +1,10 @@
 import { defineStore } from 'pinia'
-import {router} from '@/router'
+import { router } from '@/router'
+import { api } from '@/middleware'
+import { auth } from '@/middleware'
+import { evaluate } from '@/middleware'
+import 'vue3-toastify/dist/index.css'
+import { toast } from 'vue3-toastify'
 
 const userStore = defineStore('user', {
   state: () => {
@@ -7,24 +12,142 @@ const userStore = defineStore('user', {
       username: null,
       email: null,
       id: null,
-      isLogged: false,
+      isLogged: false
     }
   },
   actions: {
-    setUsername(username) {
-      this.username = username
+    async getAll() {
+      return await api.get('/getAll')
     },
-    setEmail(email) {
-      if (email === null) {
-        this.email = 'None'
+    async get(id) {
+      if (!id) {
+        id = this.id
       }
-      this.email = email
+      return JSON.parse(JSON.stringify((await api.get(`getUser/${id}`)).data[0]))
     },
-    login() {
-      this.isLogged = true
+    async delete(id) {
+      if (!id) {
+        return
+      }
+      return await api.delete(`deleteUser/${id}`)
+    },
+    async create(body) {
+      return await api.post('createUser', body)
+    },
+    async update(id, body) {
+      if (!id) {
+        id = this.id
+      }
+      return await api.put(`updateUser/${id}`, body)
+    },
+    
+    async login(body) {
+      localStorage.removeItem('token')
+      this.isLogged = false
+      if (!body.username || !body.password) {
+        toast('Se requiere usuario y contrasenya', {
+          type: 'error',
+          pauseOnHover: false,
+          pauseOnFocusLoss: false
+        })
+        return 
+      }
+
+      api
+        .post('login', body)
+        .then((res) => {
+          console.log('res', res)
+          if (auth.checkToken() === true) {
+            toast('Ya estas logueado.', { type: 'error', pauseOnHover: false })
+            return 
+          }
+          if (res.data.errorCode === 106 || res.data.errorCode === 109) {
+            toast('Login incorrecto.', {
+              type: 'error',
+              pauseOnHover: false,
+              pauseOnFocusLoss: false
+            })
+
+            router.push('login')
+            return 
+          }
+          if (res.data.token) {
+            localStorage.setItem('token', res.data.token)
+            console.log(res.data.token)
+            toast('Login correcto!', {
+              type: 'success',
+              pauseOnHover: false,
+              pauseOnFocusLoss: false
+            })
+            evaluate()
+            router.push('loggedin')
+            return res.data.token
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+          const res = err.response
+          if (res.data.errorCode === 106 || res.data.errorCode === 109) {
+            toast('Login incorrecto.', {
+              type: 'error',
+              pauseOnHover: false,
+              pauseOnFocusLoss: false
+            })
+
+            router.push('login')
+            return 
+          }
+        })
+    },
+
+
+
+    async register(body) {
+      if (!body.username || !body.password) {
+        toast('Se requiere usuario y contrasenya', {
+          type: 'error',
+          pauseOnHover: false,
+          pauseOnFocusLoss: false
+        })
+        return
+      }
+      console.log('cuerpo',body)
+      api
+        .post('register', body)
+        .then((res) => {
+          console.log('res', res)
+          if (res.data.errorCode === 107) {
+            toast('El usuario ya existe.', {
+              type: 'error',
+              pauseOnHover: false,
+              pauseOnFocusLoss: false
+            })
+            router.push('login')
+          }
+          if (res.data.token) {
+            toast('Registro correcto!', {
+              type: 'success',
+              pauseOnHover: false,
+              pauseOnFocusLoss: false
+            })
+            this.login(body)
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+          const res = err.response
+          if (res.data.errorCode === 107) {
+            toast('El usuario ya existe.', {
+              type: 'error',
+              pauseOnHover: false,
+              pauseOnFocusLoss: false
+            })
+            router.push('login')
+          }
+        })
     },
     logout() {
-      console.log(this.isLogged = false)
+      console.log((this.isLogged = false))
       localStorage.removeItem('token')
       router.push('login')
     }

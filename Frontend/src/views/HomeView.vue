@@ -1,5 +1,5 @@
 <script setup>
-import HomeIndex from '@/components/HomeIndex.vue'
+import {HomeIndex} from '@/components'
 </script>
 
 <template>
