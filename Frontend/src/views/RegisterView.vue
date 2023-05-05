@@ -1,7 +1,11 @@
 <template>
-    <v-container class="bg-blue my-16">
+  <v-sheet class="my-12"></v-sheet>
+    <v-container class=" pa-7">
+      
   <RegisterComp />
+
   </v-container>
+</v-sheet>
   </template>
   
   <script setup>
