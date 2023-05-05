@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { HomeView, LoginView, LoggedinView, RegisterView } from '@/views'
 // import { userStore } from '@/stores'
 import {evaluate} from '@/middleware'
+import testPage from '../views/testPage.vue'
 
 import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
@@ -24,6 +25,10 @@ const routes = [
     component: LoggedinView,
     meta: { requiresAuth: true }
   },
+  {
+    path: '/test',
+    component: testPage
+  }
 ]
 
 const router = createRouter({

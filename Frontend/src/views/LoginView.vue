@@ -1,7 +1,9 @@
 <template>
-  <v-container class="bg-blue my-16">
+    <v-sheet class="my-12">
+  <v-container class=" my-16">
 <LoginComp />
 </v-container>
+</v-sheet>
 </template>
 
 <script setup>

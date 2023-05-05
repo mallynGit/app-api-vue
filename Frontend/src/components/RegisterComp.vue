@@ -39,7 +39,7 @@ function validate(){
 </script>
 
 <template>
-  <div>
+
     <v-form @submit.prevent="validate" validate-on="validate">
       <v-text-field v-model="data.username" label="Usuario" required :rules="rules" id="user" class="mb-2"></v-text-field>
       <v-text-field v-model="data.email" label="Correo electronico (opcional)" id="email" class="mb-2" type="email"></v-text-field>
@@ -50,5 +50,5 @@ function validate(){
 
     </v-form>
     
-  </div>
+
 </template>

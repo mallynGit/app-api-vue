@@ -24,6 +24,19 @@ const vuetify = createVuetify({
   defaults: {
     VBtn: {
       style: "margin: 0px 10px;"
+    },
+    VCard: {
+      elevation: 7,
+    },
+    VSheet: {
+      elevation: 7,
+      rounded: true,
+      VSheet: {
+        elevation: 0,
+      }
+    },
+    VCol:{
+      elevation:7,
     }
   }
 })
