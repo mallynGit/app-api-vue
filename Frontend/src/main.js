@@ -18,8 +18,14 @@ const vuetify = createVuetify({
     aliases,
     sets:{
         mdi,
-    }
+    },
+    
   },
+  defaults: {
+    VBtn: {
+      style: "margin: 0px 10px;"
+    }
+  }
 })
 
 //pasar vuetify a plugins/vuetify, hacer configuracion global de parametros, y fin
