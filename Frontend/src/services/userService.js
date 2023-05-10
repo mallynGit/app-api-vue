@@ -2,7 +2,6 @@ import { userStore } from '@/stores'
 
 export const useAuthStore = () => {
   const store = userStore()
-
   const crearUsuario = async (data) => {
     return await store.create(data).then(result =>{return result})
   }

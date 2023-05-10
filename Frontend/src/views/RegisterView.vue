@@ -1,5 +1,5 @@
 <template>
-  <v-sheet class="my-12"></v-sheet>
+  <v-sheet class="my-12">
     <v-container class=" pa-7">
       
   <RegisterComp />

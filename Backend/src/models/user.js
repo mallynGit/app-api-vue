@@ -21,6 +21,10 @@ const User = sequelize.define(
       allowNull: true,
       validate: { isEmail: true },
     },
+    img: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    }
   },
   { freezeTableName: true, timestamps: false }
 );

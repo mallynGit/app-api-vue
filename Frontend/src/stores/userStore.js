@@ -23,7 +23,9 @@ const userStore = defineStore('user', {
       if (!id) {
         id = this.id
       }
-      return JSON.parse(JSON.stringify((await api.get(`getUser/${id}`)).data[0]))
+      return JSON.parse(JSON.stringify((await 
+        api.get(`getUser}`)).data[0])
+        )
     },
     async delete(id) {
       if (!id) {
@@ -146,18 +148,25 @@ const userStore = defineStore('user', {
           }
         })
     },
-    logout() {
+    logout(method) {
+      if(method==='tokenExp'){
+        toast('La sesion ha caducado!', {
+          type: 'error',
+          pauseOnHover: false,
+          pauseOnFocusLoss: false
+        })
+      }
       console.log((this.isLogged = false))
       localStorage.removeItem('token')
       router.push('login')
     }
   },
   getters: {
-    getUsername(state) {
-      return state.username
+    getUsername() {
+      return this.username
     },
-    getEmail(state) {
-      return state.email
+    getEmail() {
+      return this.email
     }
   }
 })
