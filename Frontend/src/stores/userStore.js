@@ -9,9 +9,12 @@ import { toast } from 'vue3-toastify'
 const userStore = defineStore('user', {
   state: () => {
     return {
-      username: null,
-      email: null,
-      id: null,
+      data: {
+        username: null,
+        email: null,
+        id: null,
+        
+      },
       isLogged: false
     }
   },
@@ -20,12 +23,20 @@ const userStore = defineStore('user', {
       return await api.get('/getAll')
     },
     async get(id) {
-      if (!id) {
-        id = this.id
+      if (this.id === (null || undefined)) {
+        toast('Token invalido, logueate de nuevo.', {
+          type: 'error',
+          pauseOnHover: false,
+          pauseOnFocusLoss: false
+        })
+        localStorage.removeItem('token')
+        return router.push('login')
+      } else {
+        if (!id) {
+          id = this.id
+        }
       }
-      return JSON.parse(JSON.stringify((await 
-        api.get(`getUser}`)).data[0])
-        )
+      return JSON.parse(JSON.stringify((await api.get(`getUser/${id}`)).data[0]))
     },
     async delete(id) {
       if (!id) {
@@ -42,8 +53,8 @@ const userStore = defineStore('user', {
       }
       return await api.put(`updateUser/${id}`, body)
     },
-    
-    async login(body) {
+
+    async login(body, register) {
       localStorage.removeItem('token')
       this.isLogged = false
       if (!body.username || !body.password) {
@@ -52,7 +63,7 @@ const userStore = defineStore('user', {
           pauseOnHover: false,
           pauseOnFocusLoss: false
         })
-        return 
+        return
       }
 
       api
@@ -61,7 +72,7 @@ const userStore = defineStore('user', {
           console.log('res', res)
           if (auth.checkToken() === true) {
             toast('Ya estas logueado.', { type: 'error', pauseOnHover: false })
-            return 
+            return
           }
           if (res.data.errorCode === 106 || res.data.errorCode === 109) {
             toast('Login incorrecto.', {
@@ -71,16 +82,17 @@ const userStore = defineStore('user', {
             })
 
             router.push('login')
-            return 
+            return
           }
           if (res.data.token) {
             localStorage.setItem('token', res.data.token)
             console.log(res.data.token)
+            if(!register){
             toast('Login correcto!', {
               type: 'success',
               pauseOnHover: false,
               pauseOnFocusLoss: false
-            })
+            })}
             evaluate()
             router.push('loggedin')
             return res.data.token
@@ -97,12 +109,10 @@ const userStore = defineStore('user', {
             })
 
             router.push('login')
-            return 
+            return
           }
         })
     },
-
-
 
     async register(body) {
       if (!body.username || !body.password) {
@@ -113,7 +123,7 @@ const userStore = defineStore('user', {
         })
         return
       }
-      console.log('cuerpo',body)
+      console.log('cuerpo', body)
       api
         .post('register', body)
         .then((res) => {
@@ -132,7 +142,7 @@ const userStore = defineStore('user', {
               pauseOnHover: false,
               pauseOnFocusLoss: false
             })
-            this.login(body)
+            this.login(body, 'sip')
           }
         })
         .catch((err) => {
@@ -149,14 +159,14 @@ const userStore = defineStore('user', {
         })
     },
     logout(method) {
-      if(method==='tokenExp'){
+      if (method === 'tokenExp') {
         toast('La sesion ha caducado!', {
           type: 'error',
           pauseOnHover: false,
           pauseOnFocusLoss: false
         })
       }
-      console.log((this.isLogged = false))
+      this.$reset()
       localStorage.removeItem('token')
       router.push('login')
     }

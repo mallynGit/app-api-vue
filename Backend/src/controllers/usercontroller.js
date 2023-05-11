@@ -25,6 +25,7 @@ const get = async(req,res) => {
         throw new AppError(NOT_LOGGED, 401, 'not logged in')
     }
     console.log('headers',req.headers)
+    console.log('params', req.params)
     if(req.params.id===undefined) throw new AppError(NO_ID, 400)
     
     //console.log((await User.findOne({attributes: ['password'], where: {id: req.params.id}})).dataValues.password);

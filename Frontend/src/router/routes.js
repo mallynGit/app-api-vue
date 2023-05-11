@@ -10,23 +10,32 @@ import 'vue3-toastify/dist/index.css'
 const routes = [
   {
     path: '/',
-    component: HomeView
+    component: HomeView,
+    name: 'Home'
   },
   {
     path: '/login',
-    component: LoginView
+    component: LoginView,
+    name: 'Login'
   },
   {
     path: '/register',
-    component: RegisterView
+    component: RegisterView,
+    name: 'Register'
   },
   {
     path: '/loggedin',
     component: LoggedinView,
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true },
+    name: 'Account'
   },
   {
     path: '/test',
+    component: testPage
+  },
+  { 
+    path: '/:catchAll(.*)',
+    name: 'NotFound',
     component: testPage
   }
 ]
@@ -42,8 +51,16 @@ router.beforeEach((to, from, next) => {
   // var payload = null
   // const user = userStore()
 
-  evaluate()
+  if(token&&(['Login','Register'].includes(to.name))){
+    next('loggedin')
+  }
 
+  try{
+    evaluate()
+  }
+  catch{
+    console.log('Hay token, pero es invalido') 
+  }
   if (to.meta.requiresAuth) {
     if (token) {
       next()

@@ -5,6 +5,7 @@ var tokenExp = null
 
 function evaluate() {
   const user = userStore()
+
   if (localStorage.getItem('token')) {
     console.log('HAY TOKEN')
     payload = JSON.parse(atob(localStorage.getItem('token').split('.')[1]))
@@ -20,17 +21,14 @@ function evaluate() {
     }
     console.log(payload.data)
     if (!user.isLogged) {
-      console.log(payload.data)
-      Object.keys(payload).forEach((key) => {
-        Object.keys(user)[key] = payload[key]
-        if (payload[key] === '') {
-          payload[key] = 'null'
-          console.log(payload[key])
+      Object.keys(payload.data).forEach((key) => {
+        console.log(key, payload.data[key])
+        Object.keys(user)[key] = payload.data[key]
+        if (payload.data[key] === '') {
+          payload.data[key] = 'null'
         }
-        const cosit = `user.${key}`
-        console.log(cosit)
-        console.log(key, Object.keys(user)[key], payload[key])
-        eval(`${cosit}='${payload[key]}'`)
+        const cosit = `user.data.${key}`
+        console.log(eval(`${cosit}="${payload.data[key]}"`))
         // console.log(Object.keys(user)[key]);
       })
       user.isLogged = true
