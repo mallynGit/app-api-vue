@@ -55,8 +55,6 @@ const userStore = defineStore('user', {
     },
 
     async login(body, register) {
-      localStorage.removeItem('token')
-      this.isLogged = false
       if (!body.username || !body.password) {
         toast('Se requiere usuario y contrasenya', {
           type: 'error',
@@ -65,23 +63,12 @@ const userStore = defineStore('user', {
         })
         return
       }
-
       api
         .post('login', body)
         .then((res) => {
           console.log('res', res)
           if (auth.checkToken() === true) {
             toast('Ya estas logueado.', { type: 'error', pauseOnHover: false })
-            return
-          }
-          if (res.data.errorCode === 106 || res.data.errorCode === 109) {
-            toast('Login incorrecto.', {
-              type: 'error',
-              pauseOnHover: false,
-              pauseOnFocusLoss: false
-            })
-
-            router.push('login')
             return
           }
           if (res.data.token) {

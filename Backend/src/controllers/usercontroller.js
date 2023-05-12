@@ -75,9 +75,9 @@ const remove = async (req,res) => {
 }
 
 const login = async (request,response)=>{
-
+    console.log(await User.findOne({where: {username: request.body.username}}));
     const user = (await User.findOne({where: {username: request.body.username}}))
-    
+    console.log(user)
     if(user===null){throw new AppError(USER_NOT_EXIST, 404, 'usuario no existe')}
 
     const encPass = user.dataValues.password
@@ -91,6 +91,7 @@ const login = async (request,response)=>{
 
     //console.log(req.body);
     delete user.dataValues.password
+    delete user.dataValues.img
     const token = auth.generateToken(user.dataValues)
     response.header("Access-Control-Allow-Origin", "https://localhost:5173")
 
@@ -118,6 +119,19 @@ const register = async (req,res)=>{
 
 }
 
+const uploadImg = async(req,res)=>{
+    console.log(req.file.buffer, 'body:',req.body.id)
+    await User.update({img: req.file.buffer}, {where: {id: req.body.id}})
+    res.send('ok')
+}
+
+const getImg = async(req,res)=>{
+    console.log('ID IMG', req.params.id);
+    var img = await User.findOne({attributes: ['img'], where: {id: req.params.id}})
+    img = img.dataValues.img
+    img = img.toString('base64')
+    res.send(img)
+}
 
 module.exports.getAll = getAll
 module.exports.get = get
@@ -126,3 +140,5 @@ module.exports.insert = create
 module.exports.remove = remove
 module.exports.login = login
 module.exports.register = register
+module.exports.uploadImg = uploadImg
+module.exports.getImg = getImg
