@@ -20,6 +20,6 @@ rou.post('/login',jsonParser, tryCatch(login))
 rou.post('/auth', tryCatch(authVerify))
 rou.post('/register', jsonParser, tryCatch(register))
 rou.post('/uploadImg', upload.single('image'), tryCatch(uploadImg))
-rou.get('/getImg/:id', tryCatch(getImg))
+rou.get('/getImg', tryCatch(getImg))
 
 module.exports = rou

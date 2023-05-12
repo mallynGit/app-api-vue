@@ -1,5 +1,6 @@
 const db = require("../db/connection");
 const User = require("../models/user");
+const UserImages = require("../models/userImg")
 const auth = require('../middleware/auth')
 const AppError = require('../AppError');
 const { NO_ID, BAD_REQUEST, BAD_LOGIN, ALREADY_LOGGED, NOT_LOGGED, USER_NOT_EXIST } = require("../constants/errorCodes");
@@ -111,6 +112,7 @@ const register = async (req,res)=>{
     console.log('UNENCRYPTED',unencrypted);
     const u =await User.create(req.body)
     req.body.password=unencrypted
+    UserImages.create({userId: u.dataValues.id, imgExtension: 'image/jpeg'})
     
     console.log('go',u)
 
@@ -120,17 +122,36 @@ const register = async (req,res)=>{
 }
 
 const uploadImg = async(req,res)=>{
-    console.log(req.file.buffer, 'body:',req.body.id)
-    await User.update({img: req.file.buffer}, {where: {id: req.body.id}})
+    //guardo el mimetype para poder mostrarlo correctamente en el frontend
+    console.log('body:',req.body.id,'\n', req.file,  '\n mimetype', req.file.mimetype)
+    console.log(await UserImages.findOne({where: { userId: 2 }}))
+    if(!(await UserImages.findOne({where: { userId: req.body.id }}))){
+    return res.send((await UserImages.create({userId: req.body.id, img: req.file.buffer, imgExtension: req.file.mimetype})).dataValues)
+    }else{
+    await UserImages.update({img: req.file.buffer, imgExtension: req.file.mimetype}, {where: { userId: req.body.id }})
+    var img = await UserImages.findOne({where: {userId: req.body.id}})
+    var ext = img.dataValues.imgExtension
+    img = img.dataValues.img
+    img = img.toString('base64')
+    return res.json({img: img, ext: ext})
+    }
+
     res.send('ok')
 }
 
 const getImg = async(req,res)=>{
-    console.log('ID IMG', req.params.id);
-    var img = await User.findOne({attributes: ['img'], where: {id: req.params.id}})
+    //cuando la url lleva parametro a lo ?id=1, se almacena en req.query
+     console.log('ID IMG', req.query.id);
+     
+    var img = await UserImages.findOne({where: {userId: req.query.id}})
+    if(img===null){
+        return res.send('noimg')
+    }
+    var ext = img.dataValues.imgExtension
+    console.log(ext)
     img = img.dataValues.img
     img = img.toString('base64')
-    res.send(img)
+    res.json({img: img, ext: ext})
 }
 
 module.exports.getAll = getAll
