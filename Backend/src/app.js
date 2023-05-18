@@ -4,7 +4,7 @@ const config = require("./config");
 const app = express();
 const routes = require("./routes/routes");
 const cors = require("cors");
-
+const path = require("path")
 const auth = require("./controllers/authcontroller")
 const errorHandler = require("./middleware/errorhandler");
 const cookieParser = require("cookie-parser");
@@ -22,6 +22,8 @@ async function createServer() {
     next();
   });
   app.use(cookieParser());
+  app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
   //app.use(auth);
   app.use(routes);
   

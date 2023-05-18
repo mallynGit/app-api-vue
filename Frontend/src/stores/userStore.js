@@ -22,21 +22,14 @@ const userStore = defineStore('user', {
     async getAll() {
       return await api.get('/getAll')
     },
-    async get(id) {
-      if (this.id === (null || undefined)) {
-        toast('Token invalido, logueate de nuevo.', {
-          type: 'error',
-          pauseOnHover: false,
-          pauseOnFocusLoss: false
-        })
-        localStorage.removeItem('token')
-        return router.push('login')
-      } else {
-        if (!id) {
-          id = this.id
-        }
-      }
-      return JSON.parse(JSON.stringify((await api.get(`getUser/${id}`)).data[0]))
+
+    async get() {
+      const e =await api.get('getUser')
+
+      console.log('eeeeeeeeeeeeeeeeeeee',JSON.parse(JSON.stringify(e.data)) )
+
+
+      return JSON.parse(JSON.stringify(e.data))
     },
     async delete(id) {
       if (!id) {

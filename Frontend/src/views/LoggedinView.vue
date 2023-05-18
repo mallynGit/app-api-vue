@@ -1,9 +1,9 @@
 <script setup>
 import 'vue3-toastify/dist/index.css'
 import { userStore } from '@/stores'
-import { onMounted, reactive, ref } from 'vue'
+import { onBeforeMount, onMounted, reactive, ref } from 'vue'
 import { api } from '@/middleware'
-const fr = new FileReader()
+
 
 const store = userStore()
 console.log(store)
@@ -14,16 +14,32 @@ var react = reactive({
   image: null
 })
 
-onMounted(async () => {
-  react.data = store.data
-  console.log('react', react.data.id)
-  getImg()
+onBeforeMount(async () => {
+
+  console.log("BEFORE MOUNT LOGGEDIN")
+
+  returnUserData()
+  console.log(react.data,'123321')
 })
+
+onMounted(async () => {
+  
+  console.log('react', react.data, 'holi')
+  
+  getImg()
+
+})
+
+async function returnUserData(){
+
+react.data = await store.get()
+console.log(react.data,'porfin')
+}
 
 function test() {
   const formData = new FormData()
   formData.append('image', react.imageUp)
-  formData.append('id', react.data.id)
+  formData.append('id', store.data.id)
   console.log('Imagen subida: ', react.imageUp)
   api
     .post('uploadImg', formData)
@@ -40,14 +56,13 @@ function onFileChange(event) {
 }
 
 async function getImg() {
-  if (react.data.id) {
+  if (store.data.id) {
     api
-      .get(`getImg`, { params: { id: react.data.id } })
+      .get('getImg', { params: { id: store.data.id } })
       .then((res) => {
+return res
+       // react.image = `data:${res.data.ext};base64,${res.data.img}`
 
-        react.image = `data:${res.data.ext};base64,${res.data.img}`
-        console.log('Imagen de perfil: ', react.image)
-        return react.image
       })
       .catch((err) => {
         console.log(err)
@@ -63,9 +78,20 @@ function selectFile(){
 </script>
 
 <template>
-  <v-row class="mx-3 py-1" style="display: flex; align-items: center;">
+
+  <v-row class="mx-3 py-1">
+
+
+  </v-row>
+  
+  <template v-for="(value, key) in react.data">
+  
+    
+    <template v-if="key==='img'">
+      <!--eslint-disable-next-line vue/valid-v-for-->
+    <v-row class="mx-3 py-1" style="display: flex; align-items: center;">
     imagen:
-    <img :src="react.image" width="100" height="100" class="mx-4" @click="selectFile" 
+    <img :src="react.data.img" width="100" height="100" class="mx-4" @click="selectFile" 
     :style="{'cursor': isHovering ? 'pointer' : 'default'}"
     @mouseenter="isHovering = true" @mouseleave="isHovering = false"/>
     <form @submit.prevent="test">
@@ -73,13 +99,8 @@ function selectFile(){
     <input type="file" @change="onFileChange" ref="fileInput" style="display:none;"/>
     </form>
   </v-row>
-  <v-row class="mx-3 py-1">
-
-
-  </v-row>
-  
-  <template v-for="(value, key) in react.data">
-    <!--eslint-disable-next-line vue/valid-v-for-->
+  </template>
+<!--eslint-disable-next-line vue/valid-v-for-->
     <v-row class="mx-3 py-1" v-if="key !== 'img'">{{ key }}: {{ value }}</v-row>
   </template>
 </template>
