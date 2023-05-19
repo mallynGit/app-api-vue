@@ -96,21 +96,18 @@ const remove = async (req, res) => {
 };
 
 const login = async (request, response) => {
-  console.log(
-    await User.findOne({ where: { username: request.body.username } })
-  );
+
   const user = await User.findOne({
     where: { username: request.body.username },
     attributes: ['id','username','email','password'] 
   });
-  console.log(user);
+
   if (user === null) {
     throw new AppError(USER_NOT_EXIST, 404, "usuario no existe");
   }
 
   const encPass = user.dataValues.password;
-  console.log(encPass);
-  console.log("passsssss", request.body.password);
+
 
   if (!request.body || !request.body.username || !request.body.password)
     throw new AppError(BAD_REQUEST, 400, "peticion malformada");
@@ -129,6 +126,7 @@ const login = async (request, response) => {
 
   // console.log(token)
   response.status(200).json({ token: token });
+  
 };
 
 const register = async (req, res) => {
