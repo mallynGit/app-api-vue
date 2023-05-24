@@ -17,5 +17,8 @@ export default defineConfig({
       key: fs.readFileSync("src/cert/client-key.pem"),
       cert: fs.readFileSync("src/cert/client-cert.pem")
     }
+  },
+  test:{
+    environment: 'happy-dom'
   }
 })

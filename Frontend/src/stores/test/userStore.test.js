@@ -1,14 +1,15 @@
-
-import { setActivePinia, createPinia } from "pinia"
+import { setActivePinia, createPinia } from 'pinia'
 import {userStore} from '@/stores'
+import {describe, beforeEach, test, expect} from 'vitest'
 
 
 describe('Test', ()=>{
     beforeEach(()=>{
         setActivePinia(createPinia())
     })
-    it('teset', ()=> {
+    test('teset', ()=> {
         const go = userStore()
-        expect(go.id).toBe(null)
+        console.log(go);
+        expect(go.data.id).toBe(null)
     })
 })
