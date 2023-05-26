@@ -27,9 +27,9 @@ function desloguear() {
 
     <v-main class="mt-6">
       <v-container fluid>
-        <v-sheet class="my-12">
+   
           <router-view></router-view>
-        </v-sheet>
+
       </v-container>
     </v-main>
   </v-app>

@@ -33,7 +33,8 @@ export const useAuthStore = () => {
   const registrarUsuario = async (data) => {
     console.log(data)
     return await store.register(data).then(res => {
-        return res
+      console.log('register from service');  
+      return res
     })
   }
 

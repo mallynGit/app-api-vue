@@ -6,15 +6,11 @@ import { evaluate } from '@/middleware'
 import 'vue3-toastify/dist/index.css'
 import { toast } from 'vue3-toastify'
 
+
 const userStore = defineStore('user', {
   state: () => {
     return {
-      data: {
-        username: null,
-        email: null,
-        id: null,
-        
-      },
+      data: {},
       isLogged: false
     }
   },
@@ -66,6 +62,7 @@ const userStore = defineStore('user', {
           }
           if (res.data.token) {
             localStorage.setItem('token', res.data.token)
+            api.defaults.headers.Authorization=res.data.token
             console.log(res.data.token)
             if(!register){
             toast('Login correcto!', {
@@ -75,7 +72,6 @@ const userStore = defineStore('user', {
             })}
             evaluate()
             router.push('loggedin')
-            return res.data.token
           }
         })
         .catch((err) => {
@@ -87,11 +83,10 @@ const userStore = defineStore('user', {
               pauseOnHover: false,
               pauseOnFocusLoss: false
             })
-
             router.push('login')
-            return
           }
         })
+        console.log('alo',api.defaults.headers);
     },
 
     async register(body) {
@@ -101,14 +96,14 @@ const userStore = defineStore('user', {
           pauseOnHover: false,
           pauseOnFocusLoss: false
         })
-        return
+        return 0
       }
       console.log('cuerpo', body)
       api
         .post('register', body)
         .then((res) => {
           console.log('res', res)
-          if (res.data.errorCode === 107) {
+          if (res.data.errorCode && res.data.errorCode === 107) {
             toast('El usuario ya existe.', {
               type: 'error',
               pauseOnHover: false,
@@ -123,12 +118,14 @@ const userStore = defineStore('user', {
               pauseOnFocusLoss: false
             })
             this.login(body, 'sip')
+            return res.data
           }
+          return 1
         })
         .catch((err) => {
-          console.log(err)
+          console.log('ERR',err)
           const res = err.response
-          if (res.data.errorCode === 107) {
+          if (res.data?.errorCode === 107) {
             toast('El usuario ya existe.', {
               type: 'error',
               pauseOnHover: false,
@@ -136,7 +133,10 @@ const userStore = defineStore('user', {
             })
             router.push('login')
           }
+          return 2
         })
+        
+        return btoa(JSON.stringify(body))
     },
     logout(method) {
       if (method === 'tokenExp') {
@@ -146,9 +146,12 @@ const userStore = defineStore('user', {
           pauseOnFocusLoss: false
         })
       }
-      this.$reset()
+      console.log('logout', api.defaults.headers.Authorization)
+      delete api.defaults.headers.Authorization
+      console.log('logged out', api.defaults.headers.Authorization);
       localStorage.removeItem('token')
       router.push('login')
+      this.$reset()
     }
   },
   getters: {

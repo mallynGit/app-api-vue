@@ -1,6 +1,6 @@
 const db = require("../db/connection");
 const User = require("../models/user");
-const multer = require("../middleware/multer")
+const multer = require("../middleware/multer");
 const auth = require("../middleware/auth");
 const AppError = require("../AppError");
 const {
@@ -13,6 +13,7 @@ const {
 } = require("../constants/errorCodes");
 const bcrypt = require("bcrypt");
 
+const uploadUrl = "https://localhost:3000/uploads/"
 const getAll = async (req, res) => {
   // res.header("Access-Control-Allow-Origin", "https://localhost:5173")
   // res.header("Access-Control-Allow-Credentials", "true")
@@ -31,16 +32,21 @@ const getAll = async (req, res) => {
 const get = async (req, res) => {
   console.log(req.headers.authorization);
   console.log("HOLIIKOI!UUIOJHO:", auth.verifyToken(req.headers.authorization));
-  if (!req.headers.authorization || !auth.verifyToken(req.headers.authorization)) {
+  if (
+    !req.headers.authorization ||
+    !auth.verifyToken(req.headers.authorization)
+  ) {
     throw new AppError(NOT_LOGGED, 401, "not logged in");
   }
-  const decodToken = JSON.parse(atob(req.headers.authorization.split('.')[1])).data
+  const decodToken = JSON.parse(
+    atob(req.headers.authorization.split(".")[1])
+  ).data;
   console.log("token decoficidado", decodToken.id);
   if (decodToken.id === undefined) throw new AppError(NO_ID, 400);
 
-  const user = await User.findOne({ where: { id: decodToken.id } })
-  delete user.dataValues.password
-  delete user.dataValues.id
+  const user = await User.findOne({ where: { id: decodToken.id } });
+  delete user.dataValues.password;
+  delete user.dataValues.id;
   //console.log((await User.findOne({attributes: ['password'], where: {id: req.params.id}})).dataValues.password);
   res.send(user.dataValues);
 };
@@ -96,10 +102,8 @@ const remove = async (req, res) => {
 };
 
 const login = async (request, response) => {
-
   const user = await User.findOne({
     where: { username: request.body.username },
-    attributes: ['id','username','email','password'] 
   });
 
   if (user === null) {
@@ -107,7 +111,6 @@ const login = async (request, response) => {
   }
 
   const encPass = user.dataValues.password;
-
 
   if (!request.body || !request.body.username || !request.body.password)
     throw new AppError(BAD_REQUEST, 400, "peticion malformada");
@@ -120,18 +123,19 @@ const login = async (request, response) => {
     throw new AppError(ALREADY_LOGGED, 301, "sesion ya iniciada");
 
   //console.log(req.body);
-  delete user.dataValues.password
+  delete user.dataValues.password;
+  
+
   const token = auth.generateToken(user.dataValues);
   response.header("Access-Control-Allow-Origin", "https://localhost:5173");
 
   // console.log(token)
   response.status(200).json({ token: token });
-  
 };
 
 const register = async (req, res) => {
   console.log(req.body);
-  if(req.body.email === '') delete req.body.email
+  if (req.body.email === "") delete req.body.email;
   const unencrypted = req.body.password;
   if (!req.body || !req.body.username || !req.body.password)
     throw new AppError(BAD_REQUEST, 400, "peticion malformada");
@@ -151,30 +155,38 @@ const uploadImg = async (req, res) => {
   //guardo el mimetype para poder mostrarlo correctamente en el frontend
   console.log(
     "body:",
-    req.body.id,
+    req.body,
+
     "\n",
-    req.file,
+    req.files,
     "\n mimetype",
     req.file.mimetype
   );
-
-
+const user = await User.findOne({where: {id: req.body.id}})
+console.log(user.img);
+user.img = req.file.filename
+await user.save()
+console.log(user.img);
   res.send("ok");
 };
 
 const getImg = async (req, res) => {
   //cuando la url lleva parametro a lo ?id=1, se almacena en req.query
   console.log("ID IMG", req.query.id);
+
   
-  const decodToken = JSON.parse(atob(req.headers.authorization.split('.')[1])).data
+  
+  const decodToken = JSON.parse(
+    atob(req.headers.authorization.split(".")[1])
+  ).data;
 
-const user = await User.findOne({where: { id: decodToken.id }})
-const img = user.dataValues.img
-const ext = img.split('\\')[img.split('\\').length-1].split('.')[1]
-console.log("USER GETIMG",decodToken);
-console.log("USER DATA", img, ext);
+  const user = await User.findOne({ where: { id: decodToken.id } });
+  let img = user.dataValues.img;
+  
+  console.log("USER GETIMG", decodToken);
+  console.log("USER DATA", img, uploadUrl+img);
 
-  res.json({ img: "img" });
+  res.json({ img: uploadUrl+img });
 };
 
 module.exports.getAll = getAll;

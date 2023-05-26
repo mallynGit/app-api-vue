@@ -10,7 +10,7 @@ const User = sequelize.define(
     img: {
       type: DataTypes.STRING,
       allowNull: true,
-      defaultValue: "https://localhost:3000/uploads/default.jpg"
+      defaultValue: "default.jpg"
     },
     username: {
       type: DataTypes.STRING,

@@ -1,5 +1,6 @@
 import { userStore } from '@/stores'
 
+
 var payload = null
 var tokenExp = null
 
@@ -17,15 +18,18 @@ function evaluate() {
   console.log('AHORA', now.getTime(), 'TOKENEXP', tokenExp.getTime())
   if (localStorage.getItem('token')) {
     if (now > tokenExp) {
-      user.logout('tokenExp')
+      return user.logout('tokenExp')
     }
     console.log(payload.data)
     if (!user.isLogged) {
       Object.keys(payload.data).forEach((key) => {
+        
         console.log(key, payload.data[key])
         Object.keys(user)[key] = payload.data[key]
         if (payload.data[key] === '') {
           payload.data[key] = 'null'
+        } else if (key==='img'){
+          payload.data[key] = 'https://localhost:3000/uploads/'+payload.data[key] 
         }
         const cosit = `user.data.${key}`
         console.log(eval(`${cosit}="${payload.data[key]}"`))
