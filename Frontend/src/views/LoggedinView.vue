@@ -26,7 +26,10 @@ onMounted(async () => {
   getImg()
   console.log('re', re)
   re.Hobbies = []
+  
+  
 })
+
 
 async function returnUserData() {
   Object.keys(store.data).forEach((key) => {
@@ -85,7 +88,7 @@ const isHoveringImg = ref(false)
 const isEditing = ref(false)
 const inputRef = ref()
 function selectFile() {
-  if (isEditing.value === true) fileInput.value[0].click()
+  if (isEditing.value === true) fileInput.value.click()
 }
 const roles = ['Aficionado', 'Dueño', 'Veterinario', 'Entrenador', 'Casa de acogida']
 const regexp = /^[a-zA-Z\s]+$/
@@ -94,10 +97,21 @@ function validateHobby(){
   if(regexp.test(inputRef.value)==false) {
     return
   }else{ 
-    const arr = re.Hobbies
-    arr.push({name: inputRef.value})
-    console.log(re.Hobbies, '1297823686361831',arr);
-    if(arr.length !== new Set(arr).size) console.log('PODEKRJAPSKNDLDOAKJj NOOOOOOOOOOO');
+    
+    re.Hobbies.push({ name: inputRef.value }); inputRef.value = ''
+    const filter = re.Hobbies.filter(
+      (obj, index) => re.Hobbies.findIndex((item)=> item.name === obj.name) === index
+    )
+    if(re.Hobbies.length>filter.length){
+      toast('No se pueden introducir hobbies repetidos.', {
+              type: 'error',
+              pauseOnHover: false,
+              pauseOnFocusLoss: false
+            })
+    re.Hobbies = filter
+    }
+    
+    
     // re.Hobbies.push({ name: inputRef.value }); inputRef.value = ''
   }
 }
@@ -110,7 +124,7 @@ const dragging = false
 
   <v-col class="mx-3 py-1" style="display: flex; align-items: center; top: 10px; z-index: 20">
     <v-avatar
-      size="125"
+      size="175"
       color="rgba(0,0,0,0.5)"
       rounded="50%"
       style="border: 1px grey solid"
@@ -119,8 +133,9 @@ const dragging = false
     >
       <v-img
         :src="re.Img"
-        width="125"
-        height="125"
+        elevation="16"
+        
+        height="175"
         class="mx-4"
         @click="selectFile"
         :style="{
@@ -153,10 +168,10 @@ const dragging = false
           </v-card-item>
 
           <v-card-item class="ml-1 py-0" :key="key" v-if="key === 'Gender'">
-            <v-radio-group :disabled="!isEditing" inline>
-              <v-radio label="Hombre" value="1" />
-              <v-radio label="Mujer" value="2" />
-              <v-radio label="No binario/otro" value="3" />
+            <v-radio-group :disabled="!isEditing" inline v-model="re.Gender">
+              <v-radio label="Hombre" value="M" class=" ma-auto"/>
+              <v-radio label="Mujer" value="F" class=" ma-auto"/>
+              <v-radio label="No binario/otro" value="N" class=" ma-auto"/>
             </v-radio-group>
           </v-card-item>
 
@@ -193,7 +208,7 @@ const dragging = false
                   
                   <v-btn
                     :style="{ cursor: isHovering ? 'move' : 'default', 'font-size': 'large' , width: '100%',left: '-10px'}" :disabled="!isEditing"
-                    @mouseenter="isHovering = true" @mouseleave="isHovering = false" variant="outlined" class="my-1" @click="console.log(re.Hobbies)">
+                    @mouseenter="isHovering = true" @mouseleave="isHovering = false" variant="outlined" class="my-1">
                     {{ element.name }}
                   </v-btn>
                   
@@ -211,7 +226,7 @@ const dragging = false
             <v-btn @click="isEditing = false" variant="outlined" v-if="isEditing">Guardar</v-btn>
           </v-col>
           <v-col class="text-right">
-            <v-btn v-if="isEditing">Atras</v-btn>
+            <v-btn v-if="isEditing" @click="isEditing = false" variant="outlined">Atras</v-btn>
           </v-col>
         </v-card-actions>
       </v-card>
