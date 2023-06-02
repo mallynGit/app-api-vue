@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { HomeView, LoginView, LoggedinView, RegisterView } from '@/views'
+import { HomeView, LoginView, LoggedinView, RegisterView, ChatView } from '@/views'
 // import { userStore } from '@/stores'
 import {evaluate} from '@/middleware'
 import testPage from '../views/testPage.vue'
@@ -28,6 +28,12 @@ const routes = [
     component: LoggedinView,
     meta: { requiresAuth: true },
     name: 'Account'
+  },
+  {
+    path: '/chat',
+    component: ChatView,
+    meta: { requiresAuth: true },
+    name: 'Chat'
   },
   {
     path: '/test',

@@ -2,6 +2,7 @@ const Router = require('express').Router
 const rou = Router()
 const db = require('../db/connection')
 const {get, update, getAll, remove, insert, login, register, uploadImg, getImg} = require('../controllers/usercontroller')
+const msg = require('../controllers/msgcontroller')
 const bodyParser = require('body-parser')
 const tryCatch = require('../utils/tryCatch')
 const jsonParser = bodyParser.json()
@@ -20,5 +21,6 @@ rou.post('/auth', tryCatch(authVerify))
 rou.post('/register', jsonParser, tryCatch(register))
 rou.post('/uploadImg', upload.single('image'), tryCatch(uploadImg))
 rou.get('/getImg', tryCatch(getImg))
+rou.get('/getAllMsg', tryCatch(msg.getAll))
 
 module.exports = rou

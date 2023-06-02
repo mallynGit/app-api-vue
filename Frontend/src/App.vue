@@ -21,6 +21,7 @@ function desloguear() {
       <v-btn class="mx-5" to="/register" v-if="!store.isLogged">Registro</v-btn>
 
       <v-btn class="mx-5" to="/loggedin" v-if="store.isLogged">Account</v-btn>
+      <v-btn class="mx-5" to="/chat" v-if="store.isLogged">Chat</v-btn>
       <v-btn class="mx-5" @click="desloguear" v-if="store.isLogged">Logout</v-btn>
       <v-btn class="mx-5" to="/login" v-if="!store.isLogged">Login</v-btn>
     </v-app-bar>

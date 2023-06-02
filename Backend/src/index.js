@@ -2,6 +2,7 @@ require("dotenv").config();
 const app = require('./app')
 const db = require('./db/connection')
 require('./models/user')
+require('./models/msg')
 
 
 app.createServer()
